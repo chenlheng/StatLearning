@@ -6,7 +6,7 @@ import numpy as np
 
 class MLP:
     def __init__(self, feat_dim, cat_num, optim, ac_fn, dr, lr, gpu,
-                 max_epoch_num, stop, bs, lamb, f, write, seed, num_seed,
+                 max_epoch_num, bs, lamb, f, write, seed, num_seed,
                  lr_decay=False,):
 
         self.gpu = gpu
@@ -15,7 +15,6 @@ class MLP:
             self.model = self.model.cuda(self.gpu)
         self.optim = optim(self.model.parameters(), lr=lr)
         self.max_epoch_num = max_epoch_num
-        self.stop = stop
         self.init_lr = lr
         self.bs = bs
         self.lamb = lamb
@@ -127,9 +126,6 @@ class MLP:
 
             loss_list.append(loss_sum)
             acc_train_list.append(acc_train)
-
-            if epoch == self.stop:
-                break
 
     def predict(self, feat):
 

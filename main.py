@@ -11,42 +11,51 @@ def parse_arg():
     parser = argparse.ArgumentParser()
 
     # training
-    parser.add_argument('-model', type=str, default='mlp')
-    parser.add_argument('-bs', type=int, default=int(1e3))
-    parser.add_argument('-lr', type=float, default=5e-3)
-    parser.add_argument('-lr_decay', action='store_true', default=False)
-    parser.add_argument('-optim', type=str, default='adam')
-    parser.add_argument('-seed', type=int, default=0)
-    parser.add_argument('-max_epoch_num', type=int, default=10)
-    parser.add_argument('-stop', type=int, default=-1)
-    parser.add_argument('-f', type=int, default=5)
-    parser.add_argument('-num_seed', type=int, default=10)
+    parser.add_argument('-model', type=str, default='mlp',
+                        help='name of used model')
+    parser.add_argument('-seed', type=int, default=0,
+                        help='random seed for training on training dataset')
+    parser.add_argument('-f', type=int, default=5,
+                        help='number of folds in CV')
+    parser.add_argument('-num_seed', type=int, default=10,
+                        help='number of repeated experiments with different seeds')
+    parser.add_argument('-no_valid', action='store_true', default=False,
+                        help='call to disable CV')
 
     # svm params
-    parser.add_argument('-kernel', type=str, default='linear')
-    parser.add_argument('-c', type=float, default=1)
+    parser.add_argument('-kernel', type=str, default='linear',
+                        help='name of used kernel')
+    parser.add_argument('-c', type=float, default=1,
+                        help='penalty coef on error term')
 
     # LR params
-    parser.add_argument('-lamb', type=float, default=0)
+    parser.add_argument('-lamb', type=float, default=0,
+                        help='coef of l2-reguralization')
 
     # KNN params
-    parser.add_argument('-k', type=int, default=20)
+    parser.add_argument('-k', type=int, default=20,
+                        help='number of nearest neighbors')
 
     # MLP params
-    parser.add_argument('-ac_fn', type=str, default='relu')
-    parser.add_argument('-no_valid', action='store_true', default=False)
-    parser.add_argument('-dr', type=float, default=0.5)
-    # parser.add_argument('-lamb', type=float, default=0) # the same as that in lr
-
-    # XgBoost params
-    parser.add_argument('-max_depth', type=int, default=6)
-    parser.add_argument('-eta', type=float, default=0.3)
-    parser.add_argument('-sub_sample', type=float, default=0.5)
-    parser.add_argument('-nthread', type=int, default=4)
+    parser.add_argument('-ac_fn', type=str, default='relu',
+                        help='activation function')
+    parser.add_argument('-dr', type=float, default=0.5,
+                        help='dropout rate')
+    parser.add_argument('-max_epoch_num', type=int, default=100,
+                        help='max number of training epoches')
+    parser.add_argument('-bs', type=int, default=int(1e3),
+                        help='batch size')
+    parser.add_argument('-lr', type=float, default=5e-3,
+                        help='learning rate')
+    parser.add_argument('-lr_decay', action='store_true', default=False,
+                        help='call to enable learning rate decaying')
+    parser.add_argument('-optim', type=str, default='adam',
+                        help='name of optimizer used')
     # parser.add_argument('-lamb', type=float, default=0) # the same as that in lr
 
     # NaiveBayes params
-    parser.add_argument('-model_type', type=str, default='multinomial')
+    parser.add_argument('-model_type', type=str, default='multinomial',
+                        help='name of kernel used')
 
     # IO
     parser.add_argument('-gpu', type=int, default=-1)
@@ -55,7 +64,8 @@ def parse_arg():
     parser.add_argument('-test_file', type=str, default='test.csv')
     parser.add_argument('-output_path', type=str, default='/home/lhchen/nas/res/stat/')
     parser.add_argument('-output_file', type=str, default='res.csv')
-    parser.add_argument('-note', type=str, default='test')
+    parser.add_argument('-note', type=str, default='test',
+                        help='name of folder to store predictions')
     args = parser.parse_args()
 
     return args
@@ -103,12 +113,9 @@ if __name__ == '__main__':
         model.train_model(train_data, args.no_valid)
     elif args.model == 'mlp':
         model = models.MLP(train_data.feat_dim, train_data.cat_num, optim, args.ac_fn, args.dr, args.lr, args.gpu,
-                           args.max_epoch_num, args.stop, args.bs, args.lamb, args.f, test_data.write, args.seed,
+                           args.max_epoch_num, args.bs, args.lamb, args.f, test_data.write, args.seed,
                            args.num_seed, args.lr_decay,)
         data = model.train_model(train_data, args.no_valid)
-    elif args.model == 'xgb':
-        model = models.XgBoost(args.max_depth, args.eta, args.nthread, args.lamb, args.sub_sample)
-        model.train_model(train_data, args.max_epoch_num, args.no_valid)
     else:
         raise NotImplementedError
 
