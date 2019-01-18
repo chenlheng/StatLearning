@@ -6,3 +6,11 @@
 data/
 
 test\.py
+
+ensemble_data/
+
+models/ensemble\.py
+
+plot\.py
+
+res/
